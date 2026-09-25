@@ -1,0 +1,111 @@
+import Foundation
+
+/// Smart-telescope family. User picks this so scanning matches how that brand
+/// drops TIFF/FITS onto disk after USB / FTP / Wi‑Fi transfer.
+enum TelescopeKind: String, CaseIterable, Identifiable, Codable {
+    case vaonis
+    case seestar
+    case dwarf
+    case origin
+
+    var id: String { rawValue }
+
+    /// Set by a single-brand build via Info.plist `STSLockedTelescope`.
+    static var lockedFromBundle: TelescopeKind? {
+        guard let raw = Bundle.main.object(forInfoDictionaryKey: "STSLockedTelescope") as? String else {
+            return nil
+        }
+        return TelescopeKind(rawValue: raw)
+    }
+
+    /// Finder name. No manufacturer or model names.
+    var editionName: String {
+        switch self {
+        case .vaonis: return "Smart Telescope Sort — Dated Sessions"
+        case .seestar: return "Smart Telescope Sort — Object Albums"
+        case .dwarf: return "Smart Telescope Sort — Session Files"
+        case .origin: return "Smart Telescope Sort — Object Date Folders"
+        }
+    }
+
+    var layoutTitle: String {
+        switch self {
+        case .vaonis: return "Dated session folders"
+        case .seestar: return "Object album folders"
+        case .dwarf: return "Session folders"
+        case .origin: return "Object and date folders"
+        }
+    }
+
+    /// One nominative mention, only inside the app, with a non-affiliation statement.
+    var compatibilityNote: String {
+        switch self {
+        case .vaonis:
+            return "Reads dated session folders from Vespera and Stellina telescopes. Independent app. Not affiliated with or created by Vaonis."
+        case .seestar:
+            return "Reads object albums from S30, S30 Pro, and S50 telescopes. Independent app. Not affiliated with or created by ZWO."
+        case .dwarf:
+            return "Reads session folders from DWARF 3, II, and mini telescopes. Independent app. Not affiliated with or created by DWARFLAB."
+        case .origin:
+            return "Reads object-and-date folders from Origin Mark II telescopes. Independent app. Not affiliated with or created by Celestron."
+        }
+    }
+
+    static let notAffiliated = "Telescope names identify folder layouts only. This app is not affiliated with or created by those manufacturers."
+
+    var menuTitle: String { layoutTitle }
+
+    /// Short tip shown under the picker — where to park files for this Sort build.
+    var dropHint: String {
+        switch self {
+        case .vaonis:
+            return "Copy the telescope’s dated session folders into Captures."
+        case .seestar:
+            return "Copy object albums into Captures and keep FIT/FITS files inside each object folder."
+        case .dwarf:
+            return "Copy session folders into Captures and keep the FITS/TIFF files inside each session."
+        case .origin:
+            return "Copy raw folders named with the object and date into Captures. Turn on raw-image saving on the telescope first."
+        }
+    }
+
+    var chooseFolderMessage: String {
+        switch self {
+        case .vaonis: return "Choose the Captures folder that holds dated session folders"
+        case .seestar: return "Choose the Captures folder that holds object albums (FIT/FITS)"
+        case .dwarf: return "Choose the Captures folder that holds session folders (FITS/TIFF)"
+        case .origin: return "Choose the Captures folder that holds object-and-date raw folders (FITS)"
+        }
+    }
+
+    var howItWorksLines: [(icon: String, text: String)] {
+        switch self {
+        case .vaonis:
+            return [
+                ("folder", "FTP User/ dated sessions into Captures — not into Targets."),
+                ("photo.on.rectangle", "Photos is for sharing; TIFF for processing, JPG for viewing."),
+                ("arrow.right.doc.on.clipboard", "Sort moves TIFF/FITS into Targets {year}/{DSO}."),
+            ]
+        case .seestar:
+            return [
+                ("cable.connector", "USB (removable drive), Wi‑Fi share, or app FIT export → Captures."),
+                ("square.stack.3d.up", "Keep object folders (M31, NGC…) with FIT/FITS inside."),
+                ("arrow.right.doc.on.clipboard", "Sort merges into Targets {year}/{DSO}. JPG-only Photos exports are skipped."),
+            ]
+        case .dwarf:
+            return [
+                ("cable.connector", "USB mass-storage or FTP (ftp://192.168.88.1) → Captures."),
+                ("folder", "Keep each session folder intact (FITS/TIFF)."),
+                ("arrow.right.doc.on.clipboard", "Sort merges into Targets {year}/{DSO}."),
+            ]
+        case .origin:
+            return [
+                ("externaldrive", "Enable Save Raw Images, then USB stick (FAT32/exFAT) or FTP → Captures."),
+                ("folder", "Keep object-and-date folders with FITS."),
+                ("arrow.right.doc.on.clipboard", "Sort merges into Targets {year}/{DSO}."),
+            ]
+        }
+    }
+
+    static let storageKey = "SmartTelescopeSort.telescopeKind"
+}
