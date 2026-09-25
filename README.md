@@ -41,4 +41,6 @@ The app reads `.tif`, `.tiff`, `.fit`, and `.fits`. It leaves JPG and PNG alone.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT, with a requirement to credit BigSkyAstro. See [LICENSE](LICENSE).
+
+Copies and modified builds must keep the copyright notice and attribute the original app to BigSkyAstro, for example: “Based on Smart Telescope Sort by BigSkyAstro — https://bigskyastro.com”.
